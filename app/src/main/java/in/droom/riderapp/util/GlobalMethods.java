@@ -8,13 +8,26 @@ import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.preference.PreferenceManager;
+import android.support.design.widget.Snackbar;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.UnderlineSpan;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.app.Dialog;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import in.droom.riderapp.R;
-import in.droom.riderapp.main.TestApplication;
+import in.droom.riderapp.adapter.UserListAdapter;
+import in.droom.riderapp.base.BaseActivity;
+import in.droom.riderapp.main.RiderApplication;
+import in.droom.riderapp.model.UserEntity;
 
 public class GlobalMethods {
 
@@ -54,7 +67,6 @@ public class GlobalMethods {
                 WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
 
         mDialog.show();
-
     }
 
     public static void hideLoadingDialog(Activity ctx) {
@@ -64,9 +76,93 @@ public class GlobalMethods {
     }
 
     // =================
+    // ======= DIALOGS
+
+    public static void showYesNoDialog(final BaseActivity ctx, String msg, final String data) {
+        final Dialog dialog = new Dialog(ctx);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        dialog.setContentView(R.layout.dialog_rider_list);
+
+        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+        wmlp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+        wmlp.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
+        TextView tv_msg = (TextView) dialog.findViewById(R.id.msg);
+        tv_msg.setText(msg);
+
+        Button btn_yes = (Button) dialog.findViewById(R.id.btn_yes);
+        Button btn_no = (Button) dialog.findViewById(R.id.btn_no);
+
+        btn_yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ctx.onSubmitClick("del_user", data);
+            }
+        });
+
+        btn_no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+    }
+
+    public static void showRiderList(BaseActivity ctx, ArrayList<UserEntity> riderList) {
+        final Dialog dialog = new Dialog(ctx);
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+
+        dialog.setContentView(R.layout.dialog_rider_list);
+
+        WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
+        wmlp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+        wmlp.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
+
+        ListView lv_riders = (ListView) dialog.findViewById(R.id.lv_riders);
+        UserListAdapter adapter = new UserListAdapter(ctx, riderList);
+        lv_riders.setAdapter(adapter);
+
+        Button btn_ok = (Button) dialog.findViewById(R.id.btn_ok);
+        btn_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+
+    // ==================
+
+    // Takes start and end pos
+    public static void underlineText(View view, int start, int end) {
+        SpannableStringBuilder strBuilder = new SpannableStringBuilder();
+
+        if (view instanceof TextView) {
+            strBuilder.append(((TextView) view).getText());
+            if (end == -1) {
+                end = strBuilder.length();
+            }
+            strBuilder.setSpan(new UnderlineSpan(), start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            ((TextView) view).setText(strBuilder);
+        } else if (view instanceof Button) {
+            strBuilder.append(((Button) view).getText());
+            if (end == -1) {
+                end = strBuilder.length();
+                ;
+            }
+            strBuilder.setSpan(new UnderlineSpan(), start, end, Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+            ((Button) view).setText(strBuilder);
+        }
+    }
 
     public static void saveToPrefs(String key, Object value, int type) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TestApplication.getContext());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(RiderApplication.getContext());
         SharedPreferences.Editor editor = sharedPreferences.edit();
 
         if (type == STRING)
@@ -79,7 +175,7 @@ public class GlobalMethods {
     }
 
     public static Object getFromPrefs(String key, int type) {
-        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(TestApplication.getContext());
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(RiderApplication.getContext());
         if (type == STRING)
             return sharedPreferences.getString(key, null);
 
@@ -89,4 +185,7 @@ public class GlobalMethods {
         return null;
     }
 
+    public static void showSnackbar(Activity act, String msg) {
+        Snackbar.make(act.findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG).show();
+    }
 }

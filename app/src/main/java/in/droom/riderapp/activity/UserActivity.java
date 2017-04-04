@@ -13,20 +13,22 @@ import java.util.ArrayList;
 import in.droom.riderapp.R;
 import in.droom.riderapp.adapter.UserListAdapter;
 import in.droom.riderapp.api.APIRequestHandler;
-import in.droom.riderapp.model.RegisterResponse;
+import in.droom.riderapp.base.BaseActivity;
+import in.droom.riderapp.model.GenericResponse;
+import in.droom.riderapp.model.UserResponse;
 import in.droom.riderapp.model.UserListResponse;
 import in.droom.riderapp.util.AppConstants;
 import in.droom.riderapp.model.BaseResponse;
-import in.droom.riderapp.model.RegisterEntity;
+import in.droom.riderapp.model.UserEntity;
 import in.droom.riderapp.util.GlobalMethods;
 
-public class UserActivity extends AppCompatActivity {
+public class UserActivity extends BaseActivity {
 
-    EditText et_username, et_name, et_pwd, et_ip;
-    Button btn_register, btn_login, btn_reset, btn_logout, btn_update;
+    EditText et_username, et_name, et_pwd;
+    Button btn_register, btn_login, btn_reset, btn_logout, btn_update, btn_fetch;
 
     ListView lv_result;
-    ArrayList<RegisterEntity> al_result;
+    ArrayList<UserEntity> al_result;
     UserListAdapter adapter_result;
 
     TextView tv_status;
@@ -46,29 +48,32 @@ public class UserActivity extends AppCompatActivity {
         et_name = (EditText) findViewById(R.id.et_name);
         et_pwd = (EditText) findViewById(R.id.et_pwd);
 
-        et_ip = (EditText) findViewById(R.id.et_ip);
-
         btn_register = (Button) findViewById(R.id.btn_register);
         btn_login = (Button) findViewById(R.id.btn_login);
         btn_update = (Button) findViewById(R.id.btn_update);
         btn_logout = (Button) findViewById(R.id.btn_logout);
         btn_reset = (Button) findViewById(R.id.btn_reset);
+        btn_fetch = (Button) findViewById(R.id.btn_fetch);
 
         ll_response = findViewById(R.id.ll_response);
 
         tv_status = (TextView) findViewById(R.id.tv_status);
 
         lv_result = (ListView) findViewById(R.id.lv_result);
-        al_result = new ArrayList<RegisterEntity>();
+        al_result = new ArrayList<UserEntity>();
         adapter_result = new UserListAdapter(UserActivity.this, al_result);
         lv_result.setAdapter(adapter_result);
+
+        btn_fetch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                APIRequestHandler.getInstance().getAllRiders(UserActivity.this);
+            }
+        });
 
         btn_register.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-                AppConstants.BASE_DOMAIN = et_ip.getText().toString();
-                GlobalMethods.saveToPrefs(AppConstants.PREFS_SERVER_IP, AppConstants.PREFS_SERVER_IP, GlobalMethods.STRING);
 
                 username = et_username.getText().toString();
                 name = et_name.getText().toString();
@@ -87,9 +92,6 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                AppConstants.BASE_DOMAIN = et_ip.getText().toString();
-                GlobalMethods.saveToPrefs(AppConstants.PREFS_SERVER_IP, AppConstants.PREFS_SERVER_IP, GlobalMethods.STRING);
-
                 username = et_username.getText().toString();
                 name = et_name.getText().toString();
                 pwd = et_pwd.getText().toString();
@@ -107,16 +109,13 @@ public class UserActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                AppConstants.BASE_DOMAIN = et_ip.getText().toString();
-                GlobalMethods.saveToPrefs(AppConstants.PREFS_SERVER_IP, AppConstants.PREFS_SERVER_IP, GlobalMethods.STRING);
-
                 username = et_username.getText().toString();
                 name = et_name.getText().toString();
                 pwd = et_pwd.getText().toString();
 
                 tv_status.setText("");
                 try {
-                    APIRequestHandler.getInstance().updateRider(UserActivity.this, name, username, pwd);
+                    APIRequestHandler.getInstance().updateRider(UserActivity.this, username, name, pwd);
                 } catch (IllegalArgumentException e) {
                     tv_status.setText(e.getMessage());
                 }
@@ -142,7 +141,6 @@ public class UserActivity extends AppCompatActivity {
                 et_username.setText("");
                 et_name.setText("");
                 et_pwd.setText("");
-                et_ip.setText("");
 
                 al_result.clear();
                 adapter_result.notifyDataSetChanged();
@@ -155,44 +153,64 @@ public class UserActivity extends AppCompatActivity {
     }
 
     void setData() {
-        String saved_ip = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_SERVER_IP, GlobalMethods.STRING);
 
         String user_status = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_USER_STATUS, GlobalMethods.STRING);
         String saved_name = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_NAME, GlobalMethods.STRING);
         String saved_username = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_USERNAME, GlobalMethods.STRING);
         String saved_pwd = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_PASSWORD, GlobalMethods.STRING);
 
-        if (saved_ip == null) {
-            GlobalMethods.saveToPrefs(AppConstants.PREFS_SERVER_IP, AppConstants.PREFS_SERVER_IP, GlobalMethods.STRING);
-        } else
-            et_ip.setText(saved_ip);
-
         et_name.setText(saved_name);
         et_username.setText(saved_username);
         et_pwd.setText(saved_pwd);
 
-        if (user_status != null && user_status.equalsIgnoreCase(AppConstants.USER_STATUS_LOGGED_IN)) {
+        if (user_status != null) {
             btn_login.setVisibility(View.GONE);
             btn_register.setVisibility(View.GONE);
             btn_update.setVisibility(View.VISIBLE);
             btn_logout.setVisibility(View.VISIBLE);
+
+            if (user_status.equalsIgnoreCase(AppConstants.USER_STATUS_SUPER_ADMIN)) {
+                btn_fetch.setVisibility(View.VISIBLE);
+            } else {
+                btn_fetch.setVisibility(View.GONE);
+            }
+
         } else {
             btn_login.setVisibility(View.VISIBLE);
             btn_register.setVisibility(View.VISIBLE);
             btn_update.setVisibility(View.GONE);
             btn_logout.setVisibility(View.GONE);
+
+            btn_fetch.setVisibility(View.GONE);
         }
     }
 
-    public void onRequestSuccess(BaseResponse response) {
+    @Override
+    public void onRequestSuccess(String type, BaseResponse response) {
 
-        if (response instanceof RegisterResponse) {
+        if (type.equalsIgnoreCase("login_rider") || type.equalsIgnoreCase("reg_rider")) {
+
+            UserResponse obj = (UserResponse) response;
 
             al_result.clear();
-            al_result.add(((RegisterResponse) response).getData());
+            al_result.add(obj.getData());
             adapter_result.notifyDataSetChanged();
 
-        } else if (response instanceof UserListResponse) {
+        } else if (type.equalsIgnoreCase("update_rider")) {
+
+            UserResponse obj = (UserResponse) response;
+
+            al_result.clear();
+            al_result.add(obj.getData());
+            adapter_result.notifyDataSetChanged();
+
+        } else if (type.equalsIgnoreCase("get_riders")) {
+
+            al_result.clear();
+            al_result.addAll(((UserListResponse) response).getData());
+            adapter_result.notifyDataSetChanged();
+
+        } else if (type.equalsIgnoreCase("del_rider")) {
 
             al_result.clear();
             al_result.addAll(((UserListResponse) response).getData());
@@ -203,10 +221,18 @@ public class UserActivity extends AppCompatActivity {
         setData();
     }
 
+    @Override
     public void onRequestFailure(String msg) {
 
         tv_status.setText(msg);
+    }
 
+    @Override
+    public void onSubmitClick(String type, String data) {
+
+        if (type.equalsIgnoreCase("del_user")) {
+            APIRequestHandler.getInstance().deleteRider(this, data);
+        }
     }
 
 }

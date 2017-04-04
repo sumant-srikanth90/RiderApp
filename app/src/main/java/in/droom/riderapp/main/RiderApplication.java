@@ -4,9 +4,9 @@ package in.droom.riderapp.main;
 import android.app.Application;
 import android.content.Context;
 
-public class TestApplication extends Application {
+public class RiderApplication extends Application {
 
-    private static TestApplication instance;
+    private static RiderApplication instance;
 
     @Override
     public void onCreate() {

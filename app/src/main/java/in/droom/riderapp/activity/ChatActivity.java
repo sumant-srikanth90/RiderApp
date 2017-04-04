@@ -26,10 +26,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 import in.droom.riderapp.R;
+import in.droom.riderapp.base.BaseActivity;
 import in.droom.riderapp.util.AppConstants;
 import in.droom.riderapp.util.GlobalMethods;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends BaseActivity {
 
     View ll_connect, ll_msg;
     NestedScrollView sv_output;

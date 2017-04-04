@@ -3,18 +3,19 @@ package in.droom.riderapp.model;
 
 import java.io.Serializable;
 
-public class RegisterEntity implements Serializable {
+public class UserEntity implements Serializable {
 
-    int id;
+    String id;
     String username;
     String name;
+    String status;
     String token;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -32,6 +33,14 @@ public class RegisterEntity implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getToken() {

@@ -1,7 +1,9 @@
 package in.droom.riderapp.model;
 
 
-public class BaseResponse {
+import java.io.Serializable;
+
+public class BaseResponse implements Serializable {
 
     String code;
     String message;

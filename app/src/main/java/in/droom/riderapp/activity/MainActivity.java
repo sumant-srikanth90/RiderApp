@@ -7,10 +7,13 @@ import android.view.View;
 import android.widget.Button;
 
 import in.droom.riderapp.R;
+import in.droom.riderapp.base.BaseActivity;
+import in.droom.riderapp.util.AppConstants;
+import in.droom.riderapp.util.GlobalMethods;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
-    Button btn_chat, btn_users, btn_map;
+    Button btn_chat, btn_users, btn_map, btn_settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
         btn_users = (Button) findViewById(R.id.btn_users);
         btn_chat = (Button) findViewById(R.id.btn_chat);
         btn_map = (Button) findViewById(R.id.btn_map);
+        btn_settings = (Button) findViewById(R.id.btn_settings);
 
         btn_users.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -48,5 +52,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btn_settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(MainActivity.this, SettingsActivity.class);
+                i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(i);
+            }
+        });
+
+        setData();
     }
+
+    void setData() {
+
+        String saved_ip = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_SERVER_IP, GlobalMethods.STRING);
+        if (saved_ip != null) {
+            AppConstants.BASE_DOMAIN = saved_ip;
+            System.out.println("SERVER IP (saved) >>>>>>>>>>> " + AppConstants.BASE_DOMAIN);
+        }
+        else {
+            System.out.println("SERVER IP (const) >>>>>>>>>>> " + AppConstants.BASE_DOMAIN);
+            GlobalMethods.saveToPrefs(AppConstants.PREFS_SERVER_IP, AppConstants.SERVER_IP, GlobalMethods.STRING);
+        }
+    }
+
 }

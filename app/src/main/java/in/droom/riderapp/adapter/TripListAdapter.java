@@ -3,28 +3,28 @@ package in.droom.riderapp.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import in.droom.riderapp.R;
-import in.droom.riderapp.activity.UserActivity;
+import in.droom.riderapp.activity.MapActivity;
 import in.droom.riderapp.api.APIRequestHandler;
 import in.droom.riderapp.base.BaseActivity;
-import in.droom.riderapp.model.UserEntity;
+import in.droom.riderapp.model.TripEntity;
 import in.droom.riderapp.util.GlobalMethods;
 
-public class UserListAdapter extends BaseAdapter {
+public class TripListAdapter extends BaseAdapter {
 
-    ArrayList<UserEntity> list;
+    ArrayList<TripEntity> list;
     BaseActivity act;
 
-    public UserListAdapter(BaseActivity act, ArrayList<UserEntity> list) {
+    public TripListAdapter(BaseActivity act, ArrayList<TripEntity> list) {
         this.list = list;
         this.act = act;
     }
@@ -53,36 +53,45 @@ public class UserListAdapter extends BaseAdapter {
         if (v == null) {
             holder = new ViewHolder();
             LayoutInflater inflater = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.adapter_user, viewGroup, false);
+            v = inflater.inflate(R.layout.adapter_trip, viewGroup, false);
 
-            holder.btn_delete = v.findViewById(R.id.btn_delete);
+            holder.btn_join = (Button) v.findViewById(R.id.btn_join);
 
             holder.id = (TextView) v.findViewById(R.id.tv_id);
-            holder.username = (TextView) v.findViewById(R.id.tv_username);
             holder.name = (TextView) v.findViewById(R.id.tv_name);
-            holder.token = (TextView) v.findViewById(R.id.tv_token);
+            holder.date = (TextView) v.findViewById(R.id.tv_date);
+            holder.riders = (TextView) v.findViewById(R.id.tv_riders);
             v.setTag(holder);
         } else {
             holder = (ViewHolder) v.getTag();
         }
 
-        holder.btn_delete.setOnClickListener(new View.OnClickListener() {
+        holder.btn_join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GlobalMethods.showYesNoDialog(act, act.getString(R.string.confirm_del_user), String.valueOf(list.get(i).getId()));
+                APIRequestHandler.getInstance().joinTrip((MapActivity) act, list.get(i).getId());
             }
         });
 
         holder.id.setText("#" + list.get(i).getId());
-        holder.username.setText("Username: " + list.get(i).getUsername());
         holder.name.setText("Name: " + list.get(i).getName());
-        holder.token.setText("Token: " + list.get(i).getToken());
+        holder.date.setText("Date: " + list.get(i).getCreated_at());
+        holder.riders.setText("Riders: " + list.get(i).getRiders().size());
+
+        GlobalMethods.underlineText(holder.riders, 0, -1);
+
+        holder.riders.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GlobalMethods.showRiderList(act, list.get(i).getRiders());
+            }
+        });
 
         return v;
     }
 
     private class ViewHolder {
-        TextView id, username, name, token;
-        View btn_delete;
+        TextView id, name, date, riders;
+        Button btn_join;
     }
 }

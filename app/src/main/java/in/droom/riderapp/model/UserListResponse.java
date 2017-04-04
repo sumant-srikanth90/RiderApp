@@ -4,13 +4,13 @@ import java.util.ArrayList;
 
 public class UserListResponse extends BaseResponse {
 
-    ArrayList<RegisterEntity> data;
+    ArrayList<UserEntity> data;
 
-    public ArrayList<RegisterEntity> getData() {
+    public ArrayList<UserEntity> getData() {
         return data;
     }
 
-    public void setData(ArrayList<RegisterEntity> data) {
+    public void setData(ArrayList<UserEntity> data) {
         this.data = data;
     }
 }
