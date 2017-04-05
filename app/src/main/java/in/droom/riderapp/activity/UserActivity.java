@@ -228,10 +228,10 @@ public class UserActivity extends BaseActivity {
     }
 
     @Override
-    public void onSubmitClick(String type, String data) {
+    public void onSubmitClick(String type, String... data) {
 
         if (type.equalsIgnoreCase("del_user")) {
-            APIRequestHandler.getInstance().deleteRider(this, data);
+            APIRequestHandler.getInstance().deleteRider(this, data[0]);
         }
     }
 

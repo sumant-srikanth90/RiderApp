@@ -10,6 +10,7 @@ public class UserEntity implements Serializable {
     String name;
     String status;
     String token;
+    Pivot pivot;
 
     public String getId() {
         return id;
@@ -49,5 +50,26 @@ public class UserEntity implements Serializable {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public Pivot getPivot() {
+        return pivot;
+    }
+
+    public void setPivot(Pivot pivot) {
+        this.pivot = pivot;
+    }
+
+    public class Pivot {
+
+        String is_admin;
+
+        public String getIs_admin() {
+            return is_admin;
+        }
+
+        public void setIs_admin(String is_admin) {
+            this.is_admin = is_admin;
+        }
     }
 }

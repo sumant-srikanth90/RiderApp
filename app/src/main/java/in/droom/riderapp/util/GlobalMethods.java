@@ -24,6 +24,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import in.droom.riderapp.R;
+import in.droom.riderapp.activity.MapActivity;
+import in.droom.riderapp.adapter.TripUserListAdapter;
 import in.droom.riderapp.adapter.UserListAdapter;
 import in.droom.riderapp.base.BaseActivity;
 import in.droom.riderapp.main.RiderApplication;
@@ -78,12 +80,12 @@ public class GlobalMethods {
     // =================
     // ======= DIALOGS
 
-    public static void showYesNoDialog(final BaseActivity ctx, String msg, final String data) {
+    public static void showYesNoDialog(final BaseActivity ctx, String msg, final String type, final String... data) {
         final Dialog dialog = new Dialog(ctx);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
-        dialog.setContentView(R.layout.dialog_rider_list);
+        dialog.setContentView(R.layout.dialog_yes_no);
 
         WindowManager.LayoutParams wmlp = dialog.getWindow().getAttributes();
         wmlp.width = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
@@ -98,7 +100,7 @@ public class GlobalMethods {
         btn_yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                ctx.onSubmitClick("del_user", data);
+                ctx.onSubmitClick(type, data);
             }
         });
 
@@ -108,9 +110,11 @@ public class GlobalMethods {
                 dialog.dismiss();
             }
         });
+
+        dialog.show();
     }
 
-    public static void showRiderList(BaseActivity ctx, ArrayList<UserEntity> riderList) {
+    public static void showRiderList(MapActivity ctx, ArrayList<UserEntity> riderList, String tripId) {
         final Dialog dialog = new Dialog(ctx);
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
         dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
@@ -122,7 +126,7 @@ public class GlobalMethods {
         wmlp.height = android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
         ListView lv_riders = (ListView) dialog.findViewById(R.id.lv_riders);
-        UserListAdapter adapter = new UserListAdapter(ctx, riderList);
+        TripUserListAdapter adapter = new TripUserListAdapter(ctx, riderList, tripId);
         lv_riders.setAdapter(adapter);
 
         Button btn_ok = (Button) dialog.findViewById(R.id.btn_ok);

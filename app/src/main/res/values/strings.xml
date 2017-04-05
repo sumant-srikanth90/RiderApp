@@ -7,6 +7,8 @@
     <!-- Common -->
     <string name="ok">OK</string>
     <string name="ready">Ready</string>
+    <string name="delete">Delete</string>
+    <string name="remove">Remove</string>
     <string name="save">Save</string>
     <string name="please_wait">Please Wait...</string>
 
@@ -47,6 +49,10 @@
     <string name="create">Create</string>
 
     <string name="rider_list_trip">List of Riders on this Trip</string>
+    <string name="confirm_del_user_trip">Are you sure you want to remove this Rider from this Trip?</string>
+
+    <string name="join">Join</string>
+    <string name="leave">Leave</string>
 
     <!-- API Messages -->
     <string name="error_server">Unexpected server error!</string>

@@ -50,7 +50,7 @@ public interface APICommonInterface {
     @FormUrlEncoded
     @POST("trips/join_trip")
     Call<TripResponse> joinTrip(
-            @Field("token") String token, @Field("id") String id);
+            @Field("token") String token, @Field("rider_id") String rider_id, @Field("trip_id") String trip_id, @Field("action") String action);
 
     @FormUrlEncoded
     @POST("trips/update_location")

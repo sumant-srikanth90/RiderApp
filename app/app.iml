@@ -122,8 +122,8 @@
     <orderEntry type="library" exported="" name="support-core-utils-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-maps-10.2.1" level="project" />
     <orderEntry type="library" exported="" name="support-annotations-25.0.0" level="project" />
-    <orderEntry type="library" exported="" name="gson-2.7" level="project" />
     <orderEntry type="library" exported="" name="retrofit-2.1.0" level="project" />
+    <orderEntry type="library" exported="" name="gson-2.7" level="project" />
     <orderEntry type="library" exported="" name="converter-gson-2.1.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-25.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-media-compat-25.0.0" level="project" />

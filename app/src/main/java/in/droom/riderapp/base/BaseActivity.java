@@ -14,7 +14,7 @@ public class BaseActivity extends Activity {
 
     }
 
-    public void onSubmitClick(String type, String data) {
+    public void onSubmitClick(String type, String... data) {
 
     }
 

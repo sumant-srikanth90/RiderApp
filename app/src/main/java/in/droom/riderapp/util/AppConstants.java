@@ -2,7 +2,7 @@ package in.droom.riderapp.util;
 
 public class AppConstants {
 
-    public static String SERVER_IP = "192.168.3.66";
+    public static String SERVER_IP = "192.168.2.22";
     public static String SERVER_PORT = "443";
 
     public static String BASE_DOMAIN = SERVER_IP;

@@ -284,4 +284,9 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback, Goo
     public void onRequestFailure(String msg) {
         GlobalMethods.showSnackbar(this, msg);
     }
+
+    @Override
+    public void onSubmitClick(String type, String... data) {
+        APIRequestHandler.getInstance().joinTrip(this, data[0], data[1]);
+    }
 }

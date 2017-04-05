@@ -109,6 +109,7 @@ public class APIRequestHandler {
                         ((UserActivity) act).onRequestFailure(response.body().getMessage());
                     }
                 } catch (Exception ex) {
+                    ex.printStackTrace();
                     ((UserActivity) act).onRequestFailure(act.getString(R.string.error_server));
                 }
             }
@@ -309,13 +310,46 @@ public class APIRequestHandler {
         });
     }
 
-    public void joinTrip(final MapActivity act, String trip_id) {
+    public void leaveTrip(final MapActivity act, String rider_id, String trip_id) {
 
         GlobalMethods.showLoadingDialog(act);
 
         String token = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_TOKEN, GlobalMethods.STRING);
 
-        apiCommonInterface.joinTrip(token, trip_id).enqueue(new Callback<TripResponse>() {
+        apiCommonInterface.joinTrip(token, rider_id, trip_id, "1").enqueue(new Callback<TripResponse>() {
+            @Override
+            public void onResponse(Call<TripResponse> call, Response<TripResponse> response) {
+
+                GlobalMethods.hideLoadingDialog(act);
+
+                try {
+                    if (response.body().getCode().equalsIgnoreCase(AppConstants.SUCCESS_CODE))
+                        (act).onRequestSuccess("join_trip", response.body());
+                    else
+                        (act).onRequestFailure(response.body().getMessage());
+                } catch (Exception ex) {
+                    (act).onRequestFailure(act.getString(R.string.error_server));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<TripResponse> call, Throwable t) {
+                GlobalMethods.hideLoadingDialog(act);
+                if (t instanceof JsonSyntaxException)
+                    act.onRequestFailure(act.getString(R.string.error_server));
+                else
+                    act.onRequestFailure(act.getString(R.string.error_conn));
+            }
+        });
+    }
+
+    public void joinTrip(final MapActivity act, String rider_id, String trip_id) {
+
+        GlobalMethods.showLoadingDialog(act);
+
+        String token = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_TOKEN, GlobalMethods.STRING);
+
+        apiCommonInterface.joinTrip(token, rider_id, trip_id, "0").enqueue(new Callback<TripResponse>() {
             @Override
             public void onResponse(Call<TripResponse> call, Response<TripResponse> response) {
 

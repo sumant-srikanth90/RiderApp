@@ -1,37 +1,36 @@
 package in.droom.riderapp.adapter;
 
 
-import android.app.Activity;
 import android.content.Context;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import in.droom.riderapp.R;
 import in.droom.riderapp.activity.MapActivity;
-import in.droom.riderapp.activity.UserActivity;
-import in.droom.riderapp.api.APIRequestHandler;
 import in.droom.riderapp.base.BaseActivity;
 import in.droom.riderapp.model.UserEntity;
 import in.droom.riderapp.util.AppConstants;
 import in.droom.riderapp.util.GlobalMethods;
 
-public class UserListAdapter extends BaseAdapter {
+public class TripUserListAdapter extends BaseAdapter {
 
-    ArrayList<UserEntity> list;
-    BaseActivity act;
+    private ArrayList<UserEntity> list;
+    private MapActivity act;
 
-    String userStatus;
+    private String userId, tripId, userStatus;
 
-    public UserListAdapter(BaseActivity act, ArrayList<UserEntity> list) {
+    public TripUserListAdapter(MapActivity act, ArrayList<UserEntity> list, String tripId) {
         this.list = list;
         this.act = act;
+        this.tripId = tripId;
 
+        userId = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_USER_ID, GlobalMethods.STRING);
         userStatus = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_USER_STATUS, GlobalMethods.STRING);
     }
 
@@ -61,7 +60,8 @@ public class UserListAdapter extends BaseAdapter {
             LayoutInflater inflater = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.adapter_user, viewGroup, false);
 
-            holder.btn_delete = v.findViewById(R.id.btn_delete);
+            holder.btn_delete = (Button) v.findViewById(R.id.btn_delete);
+            holder.btn_delete.setText(R.string.remove);
 
             holder.id = (TextView) v.findViewById(R.id.tv_id);
             holder.username = (TextView) v.findViewById(R.id.tv_username);
@@ -74,18 +74,17 @@ public class UserListAdapter extends BaseAdapter {
 
         final UserEntity rider = list.get(i);
 
-        if (userStatus != null && rider.getId().equalsIgnoreCase("100")) {
+        if (isUserAdminInTrip()) {
             holder.btn_delete.setVisibility(View.VISIBLE);
-            holder.token.setVisibility(View.VISIBLE);
+            holder.btn_delete.setText(R.string.remove);
         } else {
             holder.btn_delete.setVisibility(View.GONE);
-            holder.token.setVisibility(View.GONE);
         }
 
         holder.btn_delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GlobalMethods.showYesNoDialog(act, act.getString(R.string.confirm_del_user), "del_user", String.valueOf(list.get(i).getId()));
+                GlobalMethods.showYesNoDialog(act, act.getString(R.string.confirm_del_user_trip), String.valueOf(rider.getId()), tripId);
             }
         });
 
@@ -99,6 +98,18 @@ public class UserListAdapter extends BaseAdapter {
 
     private class ViewHolder {
         TextView id, username, name, token;
-        View btn_delete;
+        Button btn_delete;
+    }
+
+    // If user is trip admin or super admin, he can remove other riders
+    private boolean isUserAdminInTrip() {
+        if (list != null) {
+            for (UserEntity user : list) {
+                if ((userStatus != null && userStatus.equalsIgnoreCase("100")) ||
+                        (user.getId() != null && user.getId().equalsIgnoreCase(userId) && user.getPivot().getIs_admin().equalsIgnoreCase("1")))
+                    return true;
+            }
+        }
+        return false;
     }
 }

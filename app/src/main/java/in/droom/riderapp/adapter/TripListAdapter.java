@@ -17,16 +17,22 @@ import in.droom.riderapp.activity.MapActivity;
 import in.droom.riderapp.api.APIRequestHandler;
 import in.droom.riderapp.base.BaseActivity;
 import in.droom.riderapp.model.TripEntity;
+import in.droom.riderapp.model.UserEntity;
+import in.droom.riderapp.util.AppConstants;
 import in.droom.riderapp.util.GlobalMethods;
 
 public class TripListAdapter extends BaseAdapter {
 
     ArrayList<TripEntity> list;
-    BaseActivity act;
+    MapActivity act;
 
-    public TripListAdapter(BaseActivity act, ArrayList<TripEntity> list) {
+    String userId;
+
+    public TripListAdapter(MapActivity act, ArrayList<TripEntity> list) {
         this.list = list;
         this.act = act;
+
+        this.userId = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_USER_ID, GlobalMethods.STRING);
     }
 
     @Override
@@ -48,7 +54,7 @@ public class TripListAdapter extends BaseAdapter {
     public View getView(final int i, View view, ViewGroup viewGroup) {
 
         View v = view;
-        ViewHolder holder;
+        final ViewHolder holder;
 
         if (v == null) {
             holder = new ViewHolder();
@@ -66,24 +72,35 @@ public class TripListAdapter extends BaseAdapter {
             holder = (ViewHolder) v.getTag();
         }
 
+        final TripEntity trip = list.get(i);
+
+        if (isUserInTrip(trip.getRiders())) {
+            holder.btn_join.setText(R.string.leave);
+        } else {
+            holder.btn_join.setText(R.string.join);
+        }
+
         holder.btn_join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                APIRequestHandler.getInstance().joinTrip((MapActivity) act, list.get(i).getId());
+                if (holder.btn_join.getText().toString().equalsIgnoreCase(act.getString(R.string.join)))
+                    APIRequestHandler.getInstance().joinTrip(act, null, trip.getId());
+                else
+                    APIRequestHandler.getInstance().leaveTrip(act, null, trip.getId());
             }
         });
 
-        holder.id.setText("#" + list.get(i).getId());
-        holder.name.setText("Name: " + list.get(i).getName());
-        holder.date.setText("Date: " + list.get(i).getCreated_at());
-        holder.riders.setText("Riders: " + list.get(i).getRiders().size());
+        holder.id.setText("#" + trip.getId());
+        holder.name.setText("Name: " + trip.getName());
+        holder.date.setText("Date: " + trip.getCreated_at());
+        holder.riders.setText("Riders: " + trip.getRiders().size());
 
         GlobalMethods.underlineText(holder.riders, 0, -1);
 
         holder.riders.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GlobalMethods.showRiderList(act, list.get(i).getRiders());
+                GlobalMethods.showRiderList(act, trip.getRiders(), trip.getId());
             }
         });
 
@@ -93,5 +110,16 @@ public class TripListAdapter extends BaseAdapter {
     private class ViewHolder {
         TextView id, name, date, riders;
         Button btn_join;
+    }
+
+    // If user is in trip, show different text on button
+    private boolean isUserInTrip(ArrayList<UserEntity> userList) {
+        if (userList != null) {
+            for (UserEntity user : userList) {
+                if (user.getId() != null && user.getId().equalsIgnoreCase(userId))
+                    return true;
+            }
+        }
+        return false;
     }
 }
