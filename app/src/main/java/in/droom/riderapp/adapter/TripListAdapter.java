@@ -62,6 +62,7 @@ public class TripListAdapter extends BaseAdapter {
             v = inflater.inflate(R.layout.adapter_trip, viewGroup, false);
 
             holder.btn_join = (Button) v.findViewById(R.id.btn_join);
+            holder.btn_leave = (Button) v.findViewById(R.id.btn_leave);
 
             holder.id = (TextView) v.findViewById(R.id.tv_id);
             holder.name = (TextView) v.findViewById(R.id.tv_name);
@@ -74,26 +75,30 @@ public class TripListAdapter extends BaseAdapter {
 
         final TripEntity trip = list.get(i);
 
-        if (isUserInTrip(trip.getRiders())) {
-            holder.btn_join.setText(R.string.leave);
+        if (!isUserInTrip(trip.getRiders())) {
+            holder.btn_leave.setVisibility(View.GONE);
         } else {
-            holder.btn_join.setText(R.string.join);
+            holder.btn_leave.setVisibility(View.VISIBLE);
         }
 
         holder.btn_join.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (holder.btn_join.getText().toString().equalsIgnoreCase(act.getString(R.string.join)))
-                    APIRequestHandler.getInstance().joinTrip(act, null, trip.getId());
-                else
-                    APIRequestHandler.getInstance().leaveTrip(act, null, trip.getId());
+                GlobalMethods.showYesNoDialog(act, act.getString(R.string.confirm_join_trip), "join_trip", null, trip.getId());
+            }
+        });
+
+        holder.btn_leave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                GlobalMethods.showYesNoDialog(act, act.getString(R.string.confirm_leave_trip), "leave_trip", null, trip.getId());
             }
         });
 
         holder.id.setText("#" + trip.getId());
-        holder.name.setText("Name: " + trip.getName());
-        holder.date.setText("Date: " + trip.getCreated_at());
-        holder.riders.setText("Riders: " + trip.getRiders().size());
+        holder.name.setText(trip.getName());
+        holder.date.setText(trip.getCreated_at());
+        holder.riders.setText(trip.getRiders().size() + " Riders");
 
         GlobalMethods.underlineText(holder.riders, 0, -1);
 
@@ -109,7 +114,7 @@ public class TripListAdapter extends BaseAdapter {
 
     private class ViewHolder {
         TextView id, name, date, riders;
-        Button btn_join;
+        Button btn_join, btn_leave;
     }
 
     // If user is in trip, show different text on button

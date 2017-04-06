@@ -50,6 +50,8 @@
 
     <string name="rider_list_trip">List of Riders on this Trip</string>
     <string name="confirm_del_user_trip">Are you sure you want to remove this Rider from this Trip?</string>
+    <string name="confirm_leave_trip">Are you sure you want to leave this Trip?</string>
+    <string name="confirm_join_trip">Are you sure you want to join this Trip?</string>
 
     <string name="join">Join</string>
     <string name="leave">Leave</string>

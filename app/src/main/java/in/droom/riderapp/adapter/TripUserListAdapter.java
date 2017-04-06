@@ -58,10 +58,11 @@ public class TripUserListAdapter extends BaseAdapter {
         if (v == null) {
             holder = new ViewHolder();
             LayoutInflater inflater = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = inflater.inflate(R.layout.adapter_user, viewGroup, false);
+            v = inflater.inflate(R.layout.adapter_trip_user, viewGroup, false);
 
-            holder.btn_delete = (Button) v.findViewById(R.id.btn_delete);
-            holder.btn_delete.setText(R.string.remove);
+            holder.btn_remove = (Button) v.findViewById(R.id.btn_remove);
+
+            holder.ll_token = v.findViewById(R.id.ll_token);
 
             holder.id = (TextView) v.findViewById(R.id.tv_id);
             holder.username = (TextView) v.findViewById(R.id.tv_username);
@@ -75,41 +76,47 @@ public class TripUserListAdapter extends BaseAdapter {
         final UserEntity rider = list.get(i);
 
         if (isUserAdminInTrip()) {
-            holder.btn_delete.setVisibility(View.VISIBLE);
-            holder.btn_delete.setText(R.string.remove);
+            holder.btn_remove.setVisibility(View.VISIBLE);
         } else {
-            holder.btn_delete.setVisibility(View.GONE);
+            holder.btn_remove.setVisibility(View.GONE);
         }
 
-        holder.btn_delete.setOnClickListener(new View.OnClickListener() {
+        holder.btn_remove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                GlobalMethods.showYesNoDialog(act, act.getString(R.string.confirm_del_user_trip), String.valueOf(rider.getId()), tripId);
+                GlobalMethods.showYesNoDialog(act, act.getString(R.string.confirm_del_user_trip), "remove_user", String.valueOf(rider.getId()), tripId);
             }
         });
 
-        holder.id.setText("#" + list.get(i).getId());
-        holder.username.setText("Username: " + list.get(i).getUsername());
-        holder.name.setText("Name: " + list.get(i).getName());
-        holder.token.setText("Token: " + list.get(i).getToken());
+        holder.id.setText("#" + rider.getId());
+        holder.username.setText(rider.getUsername());
+        holder.name.setText(rider.getName());
+        holder.token.setText(rider.getToken());
+
+        if (rider.getToken() != null) {
+            holder.ll_token.setVisibility(View.VISIBLE);
+        } else {
+            holder.ll_token.setVisibility(View.GONE);
+        }
 
         return v;
-    }
-
-    private class ViewHolder {
-        TextView id, username, name, token;
-        Button btn_delete;
     }
 
     // If user is trip admin or super admin, he can remove other riders
     private boolean isUserAdminInTrip() {
         if (list != null) {
             for (UserEntity user : list) {
-                if ((userStatus != null && userStatus.equalsIgnoreCase("100")) ||
-                        (user.getId() != null && user.getId().equalsIgnoreCase(userId) && user.getPivot().getIs_admin().equalsIgnoreCase("1")))
+                if ((userStatus != null && userStatus.equalsIgnoreCase(AppConstants.USER_STATUS_SUPER_ADMIN)) ||
+                        (user.getId() != null && user.getId().equalsIgnoreCase(userId) && user.getTrip_info().getIs_admin().equalsIgnoreCase("1")))
                     return true;
             }
         }
         return false;
+    }
+
+    private class ViewHolder {
+        View ll_token;
+        TextView id, username, name, token;
+        Button btn_remove;
     }
 }

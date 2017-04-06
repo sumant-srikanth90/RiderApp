@@ -1,6 +1,7 @@
 package in.droom.riderapp.util;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -9,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.preference.PreferenceManager;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.UnderlineSpan;
@@ -190,6 +192,9 @@ public class GlobalMethods {
     }
 
     public static void showSnackbar(Activity act, String msg) {
-        Snackbar.make(act.findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG).show();
+        Snackbar snackbar = Snackbar.make(act.findViewById(android.R.id.content), msg, Snackbar.LENGTH_LONG);
+
+        snackbar.getView().setBackgroundColor(ContextCompat.getColor(act, R.color.white));
+        snackbar.show();
     }
 }

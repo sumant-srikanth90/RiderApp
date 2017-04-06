@@ -1,12 +1,13 @@
 package in.droom.riderapp.model;
 
-public class TripRiderUpdateEntity {
+public class TripRiderEntity {
 
     String id;
     String name;
     String username;
     String latitude;
     String longitude;
+    String is_admin;
 
     public String getId() {
         return id;
@@ -46,5 +47,13 @@ public class TripRiderUpdateEntity {
 
     public void setLongitude(String longitude) {
         this.longitude = longitude;
+    }
+
+    public String getIs_admin() {
+        return is_admin;
+    }
+
+    public void setIs_admin(String is_admin) {
+        this.is_admin = is_admin;
     }
 }

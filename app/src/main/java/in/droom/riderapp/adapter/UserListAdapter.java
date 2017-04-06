@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -61,7 +62,9 @@ public class UserListAdapter extends BaseAdapter {
             LayoutInflater inflater = (LayoutInflater) act.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             v = inflater.inflate(R.layout.adapter_user, viewGroup, false);
 
-            holder.btn_delete = v.findViewById(R.id.btn_delete);
+            holder.btn_delete = (Button) v.findViewById(R.id.btn_delete);
+
+            holder.ll_token = v.findViewById(R.id.ll_token);
 
             holder.id = (TextView) v.findViewById(R.id.tv_id);
             holder.username = (TextView) v.findViewById(R.id.tv_username);
@@ -74,7 +77,7 @@ public class UserListAdapter extends BaseAdapter {
 
         final UserEntity rider = list.get(i);
 
-        if (userStatus != null && rider.getId().equalsIgnoreCase("100")) {
+        if (userStatus != null && rider.getId().equalsIgnoreCase(AppConstants.USER_STATUS_SUPER_ADMIN)) {
             holder.btn_delete.setVisibility(View.VISIBLE);
             holder.token.setVisibility(View.VISIBLE);
         } else {
@@ -90,15 +93,16 @@ public class UserListAdapter extends BaseAdapter {
         });
 
         holder.id.setText("#" + list.get(i).getId());
-        holder.username.setText("Username: " + list.get(i).getUsername());
-        holder.name.setText("Name: " + list.get(i).getName());
-        holder.token.setText("Token: " + list.get(i).getToken());
+        holder.username.setText(rider.getUsername());
+        holder.name.setText(rider.getName());
+        holder.token.setText(rider.getToken());
 
         return v;
     }
 
     private class ViewHolder {
+        View ll_token;
         TextView id, username, name, token;
-        View btn_delete;
+        Button btn_delete;
     }
 }

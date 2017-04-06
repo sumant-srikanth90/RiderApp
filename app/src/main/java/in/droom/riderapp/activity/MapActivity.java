@@ -37,9 +37,8 @@ import in.droom.riderapp.model.BaseResponse;
 import in.droom.riderapp.model.TripEntity;
 import in.droom.riderapp.model.TripListResponse;
 import in.droom.riderapp.model.TripResponse;
-import in.droom.riderapp.model.TripRiderUpdateEntity;
-import in.droom.riderapp.model.TripRiderUpdateResponse;
-import in.droom.riderapp.model.UserEntity;
+import in.droom.riderapp.model.TripRiderEntity;
+import in.droom.riderapp.model.TripRiderResponse;
 import in.droom.riderapp.util.AppConstants;
 import in.droom.riderapp.util.GlobalMethods;
 
@@ -168,13 +167,6 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback, Goo
             mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
         }
 
-        //stop location updates
-        /*
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, MapActivity.this);
-        }
-        */
-
         if (updateCount % 2 == 0)
             APIRequestHandler.getInstance().updateRiderLocation(this, AppConstants.ACTIVE_TRIP_ID, String.valueOf(location.getLatitude()), String.valueOf(location.getLongitude()));
 
@@ -259,10 +251,10 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback, Goo
             }
             riderMarkers.clear();
 
-            TripRiderUpdateResponse obj = (TripRiderUpdateResponse) response;
+            TripRiderResponse obj = (TripRiderResponse) response;
             for (int i = 0; i < obj.getData().size(); i++) {
 
-                TripRiderUpdateEntity rider = obj.getData().get(i);
+                TripRiderEntity rider = obj.getData().get(i);
 
                 if (!rider.getId().equalsIgnoreCase(user_id)) {
 
@@ -287,6 +279,27 @@ public class MapActivity extends BaseActivity implements OnMapReadyCallback, Goo
 
     @Override
     public void onSubmitClick(String type, String... data) {
-        APIRequestHandler.getInstance().joinTrip(this, data[0], data[1]);
+
+        switch (type) {
+            case "remove_user":
+            case "leave_trip":
+                APIRequestHandler.getInstance().leaveTrip(this, data[0], data[1]);
+                break;
+
+            case "add_user":
+            case "join_trip":
+                APIRequestHandler.getInstance().joinTrip(this, data[0], data[1]);
+                break;
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        //stop location updates
+        if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, MapActivity.this);
+        }
     }
 }

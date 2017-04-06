@@ -1,9 +1,8 @@
 package in.droom.riderapp.api;
 
-import in.droom.riderapp.model.GenericResponse;
 import in.droom.riderapp.model.TripListResponse;
 import in.droom.riderapp.model.TripResponse;
-import in.droom.riderapp.model.TripRiderUpdateResponse;
+import in.droom.riderapp.model.TripRiderResponse;
 import in.droom.riderapp.model.UserResponse;
 import in.droom.riderapp.model.UserListResponse;
 import retrofit2.Call;
@@ -54,7 +53,7 @@ public interface APICommonInterface {
 
     @FormUrlEncoded
     @POST("trips/update_location")
-    Call<TripRiderUpdateResponse> updateRiderLocation(
+    Call<TripRiderResponse> updateRiderLocation(
             @Field("token") String token, @Field("trip_id") String trip_id, @Field("latitude") String latitude, @Field("longitude") String longitude);
 
 }

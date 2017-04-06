@@ -7,11 +7,9 @@ import com.google.gson.JsonSyntaxException;
 import in.droom.riderapp.activity.MapActivity;
 import in.droom.riderapp.activity.UserActivity;
 import in.droom.riderapp.R;
-import in.droom.riderapp.base.BaseActivity;
-import in.droom.riderapp.model.GenericResponse;
 import in.droom.riderapp.model.TripListResponse;
 import in.droom.riderapp.model.TripResponse;
-import in.droom.riderapp.model.TripRiderUpdateResponse;
+import in.droom.riderapp.model.TripRiderResponse;
 import in.droom.riderapp.model.UserEntity;
 import in.droom.riderapp.model.UserResponse;
 import in.droom.riderapp.model.UserListResponse;
@@ -217,9 +215,9 @@ public class APIRequestHandler {
 
         String token = (String) GlobalMethods.getFromPrefs(AppConstants.PREFS_TOKEN, GlobalMethods.STRING);
 
-        apiCommonInterface.updateRiderLocation(token, trip_id, latitude, longitude).enqueue(new Callback<TripRiderUpdateResponse>() {
+        apiCommonInterface.updateRiderLocation(token, trip_id, latitude, longitude).enqueue(new Callback<TripRiderResponse>() {
             @Override
-            public void onResponse(Call<TripRiderUpdateResponse> call, Response<TripRiderUpdateResponse> response) {
+            public void onResponse(Call<TripRiderResponse> call, Response<TripRiderResponse> response) {
 
                 GlobalMethods.hideLoadingDialog(act);
 
@@ -234,7 +232,7 @@ public class APIRequestHandler {
             }
 
             @Override
-            public void onFailure(Call<TripRiderUpdateResponse> call, Throwable t) {
+            public void onFailure(Call<TripRiderResponse> call, Throwable t) {
                 //GlobalMethods.hideLoadingDialog(act);
                 if (t instanceof JsonSyntaxException)
                     System.out.println(act.getString(R.string.error_server));
